@@ -14,7 +14,7 @@ from kivymd.uix.snackbar import Snackbar
 
 import Love_responses as Love
 import Academic_responses as Academic
-
+import Family_responses as Family
 # ----------------------------------------------------------------------------------------------------------------------
 
 Window.size = (325, 670)
@@ -91,6 +91,19 @@ def check_all_messages_academic(message):
     return Academic.unknown() if highest_prob_list[best_match] < 1 else best_match
 
 
+def check_all_messages_family(message):
+    highest_prob_list = {}
+
+    def family_response(bot_response, list_of_words, single_response=False, required_words=[]):
+        nonlocal highest_prob_list
+        highest_prob_list[bot_response] = message_probability(message, list_of_words, single_response, required_words)
+
+    family_response(Family.family(), ['i', 'want', 'to', 'go'], required_words=['want', 'go'])
+
+    best_match = max(highest_prob_list, key=highest_prob_list.get)
+
+    return Family.unknown() if highest_prob_list[best_match] < 1 else best_match
+
 # Used to get the response
 def love_get_response(love_input):
     split_message = re.split(r'\s+|[,;?!.-]\s*', love_input.lower())
@@ -102,6 +115,13 @@ def Academic_get_response(academic_input):
     split_message = re.split(r'\s+|[,;?!.-]\s*', academic_input.lower())
     response = check_all_messages_academic(split_message)
     return response
+
+
+def family_get_response(family_input):
+    split_message = re.split(r'\s+|[,;?!.-]\s*', family_input.lower())
+    response = check_all_messages_academic(split_message)
+    return response
+
 
 
 class Response(MDLabel):
@@ -252,7 +272,7 @@ class TCUAdvisor(MDApp):
                 Command(text=user_input, size_hint_x=size, halign=halign))
 
             screen.get_screen('Family_message-screen').chat_list.add_widget(
-                Response(text=love_get_response(user_input), size_hint_x=size, halign=halign))
+                Response(text=family_get_response(user_input), size_hint_x=size, halign=halign))
 
             screen.get_screen('Family_message-screen').text_input.text = ""
 
